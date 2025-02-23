@@ -22,7 +22,6 @@ public class GhostScript : MonoBehaviour
     private bool DissolveFlg = false;
     private const int maxHP = 3;
     private int HP = maxHP;
-    private Text HP_text;
 
     // moving speed
     [SerializeField] private float Speed = 4;
@@ -31,8 +30,6 @@ public class GhostScript : MonoBehaviour
     {
         Anim = this.GetComponent<Animator>();
         Ctrl = this.GetComponent<CharacterController>();
-        HP_text = GameObject.Find("Canvas/HP").GetComponent<Text>();
-        HP_text.text = "HP " + HP.ToString();
     }
 
     void Update()
@@ -287,7 +284,6 @@ public class GhostScript : MonoBehaviour
         {
             Anim.CrossFade(SurprisedState, 0.1f, 0, 0);
             HP--;
-            HP_text.text = "HP " + HP.ToString();
         }
     }
     //---------------------------------------------------------------------
