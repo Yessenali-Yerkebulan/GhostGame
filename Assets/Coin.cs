@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private float coinRotationSpeed = 200f;
+    private void Update()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        transform.Rotate(coinRotationSpeed * Time.deltaTime, 0, 0);
     }
 }
