@@ -2704,8 +2704,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f9f07c6fe3e1d74fb7d5df90dfc368f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coins: {fileID: 1792403283}
-  deaths: {fileID: 1300400832}
+  coins: {fileID: 1300400832}
+  deaths: {fileID: 1792403283}
 --- !u!1001 &471217748
 PrefabInstance:
   m_ObjectHideFlags: 0

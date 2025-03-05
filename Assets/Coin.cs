@@ -9,4 +9,11 @@ public class Coin : MonoBehaviour
     {
         transform.Rotate(coinRotationSpeed * Time.deltaTime, 0, 0);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        DataContainer._coins++;
+        FindObjectOfType<UIControl>().UpdateUI();
+        Destroy(gameObject);
+    }
 }
