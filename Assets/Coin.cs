@@ -5,6 +5,14 @@ using UnityEngine;
 public class Coin : MonoBehaviour
 {
     [SerializeField] private float coinRotationSpeed = 200f;
+
+    private float _coinRotateOffset = 50;
+
+    private void Start()
+    {
+        coinRotationSpeed = Random.Range(coinRotationSpeed - _coinRotateOffset, coinRotationSpeed + _coinRotateOffset);
+    }
+
     private void Update()
     {
         transform.Rotate(coinRotationSpeed * Time.deltaTime, 0, 0);
