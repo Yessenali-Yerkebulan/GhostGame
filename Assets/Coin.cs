@@ -6,10 +6,13 @@ public class Coin : MonoBehaviour
 {
     [SerializeField] private float coinRotationSpeed = 200f;
 
+    private RewardSystem _rewardSystem;
+
     private float _coinRotateOffset = 50;
 
     private void Start()
     {
+        _rewardSystem = GetComponentInParent<RewardSystem>();
         coinRotationSpeed = Random.Range(coinRotationSpeed - _coinRotateOffset, coinRotationSpeed + _coinRotateOffset);
     }
 
@@ -20,8 +23,7 @@ public class Coin : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        DataContainer._coins++;
-        FindObjectOfType<UIControl>().UpdateUI();
+        _rewardSystem.AddCoin();
         Destroy(gameObject);
     }
 }

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class UIControl : MonoBehaviour
+public class UIController : MonoBehaviour
 {
     [SerializeField] private TMP_Text coins;
     [SerializeField] private TMP_Text deaths;
+    [SerializeField] private GameObject winnerUI;
     void Start()
     {
         UpdateUI();
@@ -18,6 +19,10 @@ public class UIControl : MonoBehaviour
         deaths.text = DataContainer._deaths.ToString();
     }
 
+    public void FinishGame()
+    {
+        winnerUI.SetActive(true);
+    }
 
     // Update is called once per frame
     void Update()
