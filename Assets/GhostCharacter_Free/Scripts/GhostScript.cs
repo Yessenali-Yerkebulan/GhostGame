@@ -7,7 +7,7 @@ namespace Sample {
 public class GhostScript : MonoBehaviour
 {
     private Animator Anim;
-    private CharacterController Ctrl;
+    private CharacterController characterController;
     private Vector3 MoveDirection = Vector3.zero;
     // Cache hash values
     private static readonly int IdleState = Animator.StringToHash("Base Layer.idle");
@@ -21,7 +21,8 @@ public class GhostScript : MonoBehaviour
     private float Dissolve_value = 1;
     private bool DissolveFlg = false;
     private const int maxHP = 3;
-    private int HP = maxHP;
+    private bool isDead;
+    [SerializeField] Transform respawn;
 
     // moving speed
     [SerializeField] private float Speed = 4;
@@ -29,20 +30,17 @@ public class GhostScript : MonoBehaviour
     void Start()
     {
         Anim = this.GetComponent<Animator>();
-        Ctrl = this.GetComponent<CharacterController>();
+        characterController = this.GetComponent<CharacterController>();
     }
 
     void Update()
     {
         STATUS();
         GRAVITY();
-        Respawn();
         // this character status
         if(!PlayerStatus.ContainsValue( true ))
         {
             MOVE();
-            PlayerAttack();
-            Damage();
         }
         else if(PlayerStatus.ContainsValue( true ))
         {
@@ -61,7 +59,6 @@ public class GhostScript : MonoBehaviour
             }
             else if(status_name == Attack)
             {
-                PlayerAttack();
             }
             else if(status_name == Surprised)
             {
@@ -69,13 +66,13 @@ public class GhostScript : MonoBehaviour
             }
         }
         // Dissolve
-        if(HP <= 0 && !DissolveFlg)
+        if(isDead && !DissolveFlg)
         {
             Anim.CrossFade(DissolveState, 0.1f, 0, 0);
             DissolveFlg = true;
         }
         // processing at respawn
-        else if(HP == maxHP && DissolveFlg)
+        else if(!isDead && DissolveFlg)
         {
             DissolveFlg = false;
         }
@@ -97,7 +94,7 @@ public class GhostScript : MonoBehaviour
     private void STATUS ()
     {
         // during dissolve
-        if(DissolveFlg && HP <= 0)
+        if(DissolveFlg && isDead)
         {
             PlayerStatus[Dissolve] = true;
         }
@@ -134,23 +131,21 @@ public class GhostScript : MonoBehaviour
         }
         if(Dissolve_value <= 0)
         {
-            Ctrl.enabled = false;
+            characterController.enabled = false;
+            Respawn();
         }
     }
     // play a animation of Attack
     private void PlayerAttack ()
     {
-        if(Input.GetKeyDown(KeyCode.A))
-        {
-            Anim.CrossFade(AttackState,0.1f,0,0);
-        }
+        Anim.CrossFade(AttackState,0.1f,0,0); 
     }
     //---------------------------------------------------------------------
     // gravity for fall of this character
     //---------------------------------------------------------------------
     private void GRAVITY ()
     {
-        if(Ctrl.enabled)
+        if(characterController.enabled)
         {
             if(CheckGrounded())
             {
@@ -160,7 +155,7 @@ public class GhostScript : MonoBehaviour
                 }
             }
             MoveDirection.y -= 0.1f;
-            Ctrl.Move(MoveDirection * Time.deltaTime);
+            characterController.Move(MoveDirection * Time.deltaTime);
         }
     }
     //---------------------------------------------------------------------
@@ -168,7 +163,7 @@ public class GhostScript : MonoBehaviour
     //---------------------------------------------------------------------
     private bool CheckGrounded()
     {
-        if (Ctrl.isGrounded && Ctrl.enabled)
+        if (characterController.isGrounded && characterController.enabled)
         {
             return true;
         }
@@ -210,9 +205,9 @@ public class GhostScript : MonoBehaviour
     private void MOVE_Velocity (Vector3 velocity, Vector3 rot)
     {
         MoveDirection = new Vector3 (velocity.x, MoveDirection.y, velocity.z);
-        if(Ctrl.enabled)
+        if(characterController.enabled)
         {
-            Ctrl.Move(MoveDirection * Time.deltaTime);
+            characterController.Move(MoveDirection * Time.deltaTime);
         }
         MoveDirection.x = 0;
         MoveDirection.z = 0;
@@ -277,29 +272,28 @@ public class GhostScript : MonoBehaviour
     //---------------------------------------------------------------------
     // damage
     //---------------------------------------------------------------------
-    private void Damage ()
+    public void Damage ()
     {
-        // Damaged by outside field.
-        if(Input.GetKeyUp(KeyCode.S))
-        {
-            Anim.CrossFade(SurprisedState, 0.1f, 0, 0);
-            HP--;
-        }
+            // Damaged by outside field.
+        Anim.CrossFade(SurprisedState, 0.1f, 0, 0);
+        if(!isDead)
+            {
+                DataContainer._deaths++;
+            }
+        isDead = true;
     }
     //---------------------------------------------------------------------
     // respawn
     //---------------------------------------------------------------------
     private void Respawn ()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
             // player HP
-            HP = maxHP;
+            isDead = false;
             
-            Ctrl.enabled = false;
-            this.transform.position = Vector3.zero; // player position
-            this.transform.rotation = Quaternion.Euler(Vector3.zero); // player facing
-            Ctrl.enabled = true;
+            characterController.enabled = false;
+            this.transform.position = respawn.position; // player position
+            this.transform.rotation = respawn.rotation; // player facing
+            characterController.enabled = true;
             
             // reset Dissolve
             Dissolve_value = 1;
@@ -309,7 +303,12 @@ public class GhostScript : MonoBehaviour
             }
             // reset animation
             Anim.CrossFade(IdleState, 0.1f, 0, 0);
-        }
     }
+
+
+    public void LockInput()
+        {
+            characterController.enabled = false;
+        }
 }
 }
